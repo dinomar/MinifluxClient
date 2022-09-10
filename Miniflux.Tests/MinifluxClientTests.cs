@@ -111,11 +111,11 @@ namespace Miniflux.Tests
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
             // Act
-            CreateFeedResponseModel result = await client.CreateFeedAsync(newFeed);
-            await client.DeleteFeedAsync(result.FeedId);
+            int feedId = await client.CreateFeedAsync(newFeed);
+            await client.DeleteFeedAsync(feedId);
 
             // Assert
-            Assert.NotNull(result); // 70
+            Assert.True(feedId  > 0);
         }
 
         [Fact]
@@ -136,10 +136,10 @@ namespace Miniflux.Tests
 
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
-            CreateFeedResponseModel createResult = await client.CreateFeedAsync(newFeed);
+            int feedId = await client.CreateFeedAsync(newFeed);
 
             // Act
-            Feed updateResult = await client.UpdateFeedAsync(createResult.FeedId, updatefeed);
+            Feed updateResult = await client.UpdateFeedAsync(feedId, updatefeed);
             
             await client.DeleteFeedAsync(updateResult.Id);
 
@@ -158,10 +158,10 @@ namespace Miniflux.Tests
             };
 
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
-            CreateFeedResponseModel result = await client.CreateFeedAsync(newFeed);
+            int feedId = await client.CreateFeedAsync(newFeed);
 
             // Act Assert
-            await client.DeleteFeedAsync(result.FeedId);
+            await client.DeleteFeedAsync(feedId);
         }
 
         [Fact]
@@ -208,7 +208,7 @@ namespace Miniflux.Tests
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
             // Act
-            EntriesResponseModel results = await client.GetFeedEntriesAsync(feedId);
+            IEnumerable<Entry> results = await client.GetFeedEntriesAsync(feedId);
 
             // Assert
             Assert.NotNull(results);
@@ -246,7 +246,7 @@ namespace Miniflux.Tests
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
             // Act
-            EntriesResponseModel result = await client.GetEntriesAsync();
+            IEnumerable<Entry> result = await client.GetEntriesAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -535,7 +535,7 @@ namespace Miniflux.Tests
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
             // Act
-            string result = await client.Export();
+            string result = await client.ExportAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -552,11 +552,11 @@ namespace Miniflux.Tests
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
             // Act
-            ClientResponseModel result = await client.Import(xmlBytes);
+            string result = await client.ImportAsync(xmlBytes);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Contains(expected, result.Message);
+            Assert.Contains(expected, result);
         }
     }
 }

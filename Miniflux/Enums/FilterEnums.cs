@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Miniflux.Enums
 {
+    [Flags]
     public enum StatusFilter
     {
         Read,

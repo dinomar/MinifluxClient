@@ -12,7 +12,7 @@ namespace Miniflux.Models
         public string Title { get; set; }
 
         [JsonProperty("category_id")]
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
 
 
         [JsonProperty("feed_url")]

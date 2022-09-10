@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Miniflux.Helpers;
 
 namespace Miniflux.Clients
 {
@@ -87,7 +88,7 @@ namespace Miniflux.Clients
             return await GetAsync<Icon>($"/v{APIVERSION}/feeds/{id}/icon");
         }
 
-        public async Task<CreateFeedResponseModel> CreateFeedAsync(
+        public async Task<int> CreateFeedAsync(
             string feedUrl,
             int categoryId,
             string username="",
@@ -120,17 +121,51 @@ namespace Miniflux.Clients
             });
         }
 
-        public async Task<CreateFeedResponseModel> CreateFeedAsync(CreateFeedRequestModel createFeed)
+        public async Task<int> CreateFeedAsync(CreateFeedRequestModel createFeed)
         {
             string json = JsonConvert.SerializeObject(createFeed);
 
-            return await PostAsync<CreateFeedResponseModel>($"/v{APIVERSION}/feeds", json);
+            return (await PostAsync<CreateFeedResponseModel>($"/v{APIVERSION}/feeds", json)).FeedId;
         }
 
         public async Task<Feed> UpdateFeedAsync(
             int feedId,
-            string title,
             int categoryId,
+            string title = null,
+            string feedUrl = null,
+            string siteUrl = null,
+            string scraperRules = null,
+            string rewriteRules = null,
+            string blocklistRules = null,
+            bool? crawler = null,
+            string userAgent = null,
+            string username = null,
+            string password = null,
+            bool? ignoreHttpCache = null,
+            bool? fetchViaProxy = null)
+        {
+            return await UpdateFeedAsync(feedId, new UpdateFeedRequestModel
+            {
+                Title = title,
+                CategoryId = categoryId,
+                FeedUrl = feedUrl,
+                SiteUrl = siteUrl,
+                ScraperRules = scraperRules,
+                RewriteRules = rewriteRules,
+                BlocklistRules = blocklistRules,
+                Crawler = crawler,
+                UserAgent = userAgent,
+                Username = username,
+                Password = password,
+                IgnoreHttpCache = ignoreHttpCache,
+                FetchViaProxy = fetchViaProxy
+            });
+        }
+
+            public async Task<Feed> UpdateFeedAsync(
+            int feedId,
+            string title,
+            int? categoryId = null,
             string feedUrl=null,
             string siteUrl=null,
             string scraperRules = null,
@@ -188,12 +223,12 @@ namespace Miniflux.Clients
             return await GetAsync<Entry>($"/v{APIVERSION}/feeds/{feedId}/entries/{entryId}");
         }
 
-        public async Task<ContentResponseModel> FetchOriginalArticleAsync(int entryId)
+        public async Task<string> FetchOriginalArticleAsync(int entryId)
         {
-            return await GetAsync<ContentResponseModel>($"/v{APIVERSION}/entries/{entryId}/fetch-content");
+            return (await GetAsync<ContentResponseModel>($"/v{APIVERSION}/entries/{entryId}/fetch-content")).Content;
         }
 
-        public async Task<EntriesResponseModel> GetFeedEntriesAsync(
+        public async Task<IEnumerable<Entry>> GetFeedEntriesAsync(
             int feedId,
             StatusFilter? status=null,
             int? offset=null,
@@ -208,24 +243,21 @@ namespace Miniflux.Clients
             string search=null,
             int? categoryId=null)
         {
-            StringBuilder sb = new StringBuilder("?");
+            QueryBuilder query = new QueryBuilder();
+            query.AddEnum(nameof(status), status);
+            query.AddItem(nameof(offset), offset);
+            query.AddItem(nameof(limit), limit);
+            query.AddEnum(nameof(order), order);
+            query.AddEnum(nameof(direction), direction);
+            query.AddItem(nameof(before), before);
+            query.AddItem(nameof(after), after);
+            query.AddItem("before_entry_id", beforeEntryId);
+            query.AddItem("after_entry_id", afterEntryId);
+            query.AddItem(nameof(starred), starred);
+            query.AddItem(nameof(search), search);
+            query.AddItem("category_id", categoryId);
 
-            if (status != null) { sb.Append($"{nameof(status)}={Enum.GetName(typeof(StatusFilter), status)}&"); }
-            if (offset != null) { sb.Append($"{nameof(offset)}={offset}&"); }
-            if (limit != null) { sb.Append($"{nameof(limit)}={limit}&"); }
-            if (order != null) { sb.Append($"{nameof(order)}={Enum.GetName(typeof(OrderFilter), order)}&"); }
-            if (direction != null) { sb.Append($"{nameof(direction)}={Enum.GetName(typeof(DirectionFilter), direction)}&"); }
-            if (before != null) { sb.Append($"{nameof(before)}={before}&"); }
-            if (after != null) { sb.Append($"{nameof(after)}={after}&"); }
-            if (beforeEntryId != null) { sb.Append($"before_entry_id={beforeEntryId}&"); }
-            if (afterEntryId != null) { sb.Append($"after_entry_id={afterEntryId}&"); }
-            if (starred != null) { sb.Append($"{nameof(starred)}={starred}&"); }
-            if (search != null) { sb.Append($"{nameof(search)}={search}&"); }
-            if (categoryId != null) { sb.Append($"category_id={categoryId}&"); }
-
-            string queryString = (sb.Length > 1) ? sb.ToString(0, sb.Length - 1) : string.Empty;
-
-            return await GetAsync<EntriesResponseModel>($"/v{APIVERSION}/feeds/{feedId}/entries" + queryString);
+            return (await GetAsync<EntriesResponseModel>($"/v{APIVERSION}/feeds/{feedId}/entries" + query.ToString())).Entries;
         }
 
         public async Task MarkFeedEntriesAsRead(int feedId)
@@ -238,7 +270,7 @@ namespace Miniflux.Clients
             return await GetAsync<Entry>($"/v{APIVERSION}/entries/{entryId}");
         }
 
-        public async Task<EntriesResponseModel> GetEntriesAsync(
+        public async Task<IEnumerable<Entry>> GetEntriesAsync(
             StatusFilter? status = null,
             int? offset = null,
             int? limit = null,
@@ -252,24 +284,21 @@ namespace Miniflux.Clients
             string search = null,
             int? categoryId = null)
         {
-            StringBuilder sb = new StringBuilder("?");
+            QueryBuilder query = new QueryBuilder();
+            query.AddEnum(nameof(status), status);
+            query.AddItem(nameof(offset), offset);
+            query.AddItem(nameof(limit), limit);
+            query.AddEnum(nameof(order), order);
+            query.AddEnum(nameof(direction), direction);
+            query.AddItem(nameof(before), before);
+            query.AddItem(nameof(after), after);
+            query.AddItem("before_entry_id", beforeEntryId);
+            query.AddItem("after_entry_id", afterEntryId);
+            query.AddItem(nameof(starred), starred);
+            query.AddItem(nameof(search), search);
+            query.AddItem("category_id", categoryId);
 
-            if (status != null) { sb.Append($"{nameof(status)}={Enum.GetName(typeof(StatusFilter), status)}&"); }
-            if (offset != null) { sb.Append($"{nameof(offset)}={offset}&"); }
-            if (limit != null) { sb.Append($"{nameof(limit)}={limit}&"); }
-            if (order != null) { sb.Append($"{nameof(order)}={Enum.GetName(typeof(OrderFilter), order)}&"); }
-            if (direction != null) { sb.Append($"{nameof(direction)}={Enum.GetName(typeof(DirectionFilter), direction)}&"); }
-            if (before != null) { sb.Append($"{nameof(before)}={before}&"); }
-            if (after != null) { sb.Append($"{nameof(after)}={after}&"); }
-            if (beforeEntryId != null) { sb.Append($"before_entry_id={beforeEntryId}&"); }
-            if (afterEntryId != null) { sb.Append($"after_entry_id={afterEntryId}&"); }
-            if (starred != null) { sb.Append($"{nameof(starred)}={starred}&"); }
-            if (search != null) { sb.Append($"{nameof(search)}={search}&"); }
-            if (categoryId != null) { sb.Append($"category_id={categoryId}&"); }
-
-            string queryString = (sb.Length > 1) ? sb.ToString(0, sb.Length - 1) : string.Empty;
-
-            return await GetAsync<EntriesResponseModel>($"/v{APIVERSION}/entries" + queryString);
+            return (await GetAsync<EntriesResponseModel>($"/v{APIVERSION}/entries" + query.ToString())).Entries;
         }
 
         public async Task UpdateEntriesAsync(int[] entryIds, string status)
@@ -299,7 +328,7 @@ namespace Miniflux.Clients
             return await GetAsync<IEnumerable<Category>>($"/v{APIVERSION}/categories");
         }
 
-        public async Task<EntriesResponseModel> GetCategoryEntriesAsync(
+        public async Task<IEnumerable<Entry>> GetCategoryEntriesAsync(
             int categoryId,
             StatusFilter? status = null,
             int? offset = null,
@@ -313,23 +342,21 @@ namespace Miniflux.Clients
             bool? starred = null,
             string search = null)
         {
-            StringBuilder sb = new StringBuilder("?");
 
-            if (status != null) { sb.Append($"{nameof(status)}={Enum.GetName(typeof(StatusFilter), status)}&"); }
-            if (offset != null) { sb.Append($"{nameof(offset)}={offset}&"); }
-            if (limit != null) { sb.Append($"{nameof(limit)}={limit}&"); }
-            if (order != null) { sb.Append($"{nameof(order)}={Enum.GetName(typeof(OrderFilter), order)}&"); }
-            if (direction != null) { sb.Append($"{nameof(direction)}={Enum.GetName(typeof(DirectionFilter), direction)}&"); }
-            if (before != null) { sb.Append($"{nameof(before)}={before}&"); }
-            if (after != null) { sb.Append($"{nameof(after)}={after}&"); }
-            if (beforeEntryId != null) { sb.Append($"before_entry_id={beforeEntryId}&"); }
-            if (afterEntryId != null) { sb.Append($"after_entry_id={afterEntryId}&"); }
-            if (starred != null) { sb.Append($"{nameof(starred)}={starred}&"); }
-            if (search != null) { sb.Append($"{nameof(search)}={search}&"); }
+            QueryBuilder query = new QueryBuilder();
+            query.AddEnum(nameof(status), status);
+            query.AddItem(nameof(offset), offset);
+            query.AddItem(nameof(limit), limit);
+            query.AddEnum(nameof(order), order);
+            query.AddEnum(nameof(direction), direction);
+            query.AddItem(nameof(before), before);
+            query.AddItem(nameof(after), after);
+            query.AddItem("before_entry_id", beforeEntryId);
+            query.AddItem("after_entry_id", afterEntryId);
+            query.AddItem(nameof(starred), starred);
+            query.AddItem(nameof(search), search);
 
-            string queryString = (sb.Length > 1) ? sb.ToString(0, sb.Length - 1) : string.Empty;
-
-            return await GetAsync<EntriesResponseModel>($"/v{APIVERSION}/categories/{categoryId}/entries" + queryString);
+            return (await GetAsync<EntriesResponseModel>($"/v{APIVERSION}/categories/{categoryId}/entries" + query.ToString())).Entries;
         }
 
         public async Task<Category> CreateCategoryAsync(string title)
@@ -446,14 +473,14 @@ namespace Miniflux.Clients
         }
 
 
-        public async Task<string> Export()
+        public async Task<string> ExportAsync()
         {
             return await GetAsync($"/v{APIVERSION}/export");
         }
 
-        public async Task<ClientResponseModel> Import(byte[] file)
+        public async Task<string> ImportAsync(byte[] file)
         {
-            return await PostAsync<ClientResponseModel>($"/v{APIVERSION}/import", file);
+            return (await PostAsync<ClientResponseModel>($"/v{APIVERSION}/import", file)).Message;
         }
 
 
