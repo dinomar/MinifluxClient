@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Miniflux.Models
 {
-    public class EntriesResponse
+    public class EntriesResponseModel
     {
         [JsonProperty("total")]
         public int Total { get; set; }

@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Miniflux.Models
 {
-    public class DiscoverRequest
+    public class CreateFeedResponseModel
     {
-        [JsonProperty("url")]
-        public string Url { get; set; }
+        [JsonProperty("feed_id")]
+        public int FeedId { get; set; }
     }
 }

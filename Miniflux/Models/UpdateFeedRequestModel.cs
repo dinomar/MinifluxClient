@@ -5,7 +5,8 @@ using System.Text;
 
 namespace Miniflux.Models
 {
-    public class UpdateFeedRequest
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
+    public class UpdateFeedRequestModel
     {
         [JsonProperty("title")]
         public string Title { get; set; }
@@ -33,7 +34,7 @@ namespace Miniflux.Models
         public string KeeplistRules { get; set; }
 
         [JsonProperty("crawler")]
-        public bool Crawler { get; set; }
+        public bool? Crawler { get; set; }
 
         [JsonProperty("user_agent")]
         public string UserAgent { get; set; }
@@ -48,9 +49,9 @@ namespace Miniflux.Models
         public bool Disabled { get; set; }
 
         [JsonProperty("ignore_http_cache")]
-        public bool IgnoreHttpCache { get; set; }
+        public bool? IgnoreHttpCache { get; set; }
 
         [JsonProperty("fetch_via_proxy")]
-        public bool FetchViaProxy { get; set; }
+        public bool? FetchViaProxy { get; set; }
     }
 }

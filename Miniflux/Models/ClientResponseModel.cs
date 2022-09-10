@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Miniflux.Models
 {
-    public class UpdateUserRequest
+    public class ClientResponseModel
     {
-        [JsonProperty("username")]
-        public string Username { get; set; }
+        [JsonProperty("message")]
+        public string Message { get; set; }
     }
 }

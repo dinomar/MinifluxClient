@@ -51,7 +51,7 @@ namespace Miniflux.Tests
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
             // Act
-            IEnumerable<Subscription> result = await client.Discover(url);
+            IEnumerable<Subscription> result = await client.DiscoverAsync(url);
 
             // Assert
             Assert.NotNull(result);
@@ -102,7 +102,7 @@ namespace Miniflux.Tests
         public async Task CanCreateFeed()
         {
             // Arrange
-            CreateFeedRequest newFeed = new CreateFeedRequest
+            CreateFeedRequestModel newFeed = new CreateFeedRequestModel
             {
                 FeedUrl = "https://www.debian.org/News/news",
                 CategoryId = 1
@@ -111,7 +111,7 @@ namespace Miniflux.Tests
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
             // Act
-            CreateFeedResponse result = await client.CreateFeedAsync(newFeed);
+            CreateFeedResponseModel result = await client.CreateFeedAsync(newFeed);
             await client.DeleteFeedAsync(result.FeedId);
 
             // Assert
@@ -122,13 +122,13 @@ namespace Miniflux.Tests
         public async Task CanUpdateFeed()
         {
             // Arrange
-            CreateFeedRequest newFeed = new CreateFeedRequest
+            CreateFeedRequestModel newFeed = new CreateFeedRequestModel
             {
                 FeedUrl = "https://www.debian.org/News/news",
                 CategoryId = 1
             };
 
-            UpdateFeedRequest updatefeed = new UpdateFeedRequest
+            UpdateFeedRequestModel updatefeed = new UpdateFeedRequestModel
             {
                 Title = "New title",
                 CategoryId = 1
@@ -136,7 +136,7 @@ namespace Miniflux.Tests
 
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
-            CreateFeedResponse createResult = await client.CreateFeedAsync(newFeed);
+            CreateFeedResponseModel createResult = await client.CreateFeedAsync(newFeed);
 
             // Act
             Feed updateResult = await client.UpdateFeedAsync(createResult.FeedId, updatefeed);
@@ -151,14 +151,14 @@ namespace Miniflux.Tests
         public async Task CanDeleteFeed()
         {
             // Arrange
-            CreateFeedRequest newFeed = new CreateFeedRequest
+            CreateFeedRequestModel newFeed = new CreateFeedRequestModel
             {
                 FeedUrl = "https://www.debian.org/News/news",
                 CategoryId = 1
             };
 
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
-            CreateFeedResponse result = await client.CreateFeedAsync(newFeed);
+            CreateFeedResponseModel result = await client.CreateFeedAsync(newFeed);
 
             // Act Assert
             await client.DeleteFeedAsync(result.FeedId);
@@ -208,7 +208,7 @@ namespace Miniflux.Tests
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
             // Act
-            EntriesResponse results = await client.GetFeedEntriesAsync(feedId);
+            EntriesResponseModel results = await client.GetFeedEntriesAsync(feedId);
 
             // Assert
             Assert.NotNull(results);
@@ -246,7 +246,7 @@ namespace Miniflux.Tests
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
             // Act
-            EntriesResponse result = await client.GetEntriesAsync();
+            EntriesResponseModel result = await client.GetEntriesAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -257,9 +257,9 @@ namespace Miniflux.Tests
         {
             // Arrange
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
-            UpdateEntriesRequest updateEntries = new UpdateEntriesRequest
+            UpdateEntriesRequestModel updateEntries = new UpdateEntriesRequestModel
             {
-                entryIds = new int[] { 4055, 4054 },
+                EntryIds = new int[] { 4055, 4054 },
                 Status = "read"
             };
 
@@ -275,7 +275,7 @@ namespace Miniflux.Tests
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
             // Act Assert
-            await client.ToggleBookmarkAsync(entryId);
+            await client.ToggleBookmarkedAsync(entryId);
         }
 
         [Fact]
@@ -296,7 +296,7 @@ namespace Miniflux.Tests
         {
             // Arrange
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
-            CreateUpdateCategoryRequest createCategory = new CreateUpdateCategoryRequest
+            CreateUpdateCategoryRequestModel createCategory = new CreateUpdateCategoryRequestModel
             {
                 Title = "New Category"
             };
@@ -316,12 +316,12 @@ namespace Miniflux.Tests
             // Arrange
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
-            CreateUpdateCategoryRequest createCategory = new CreateUpdateCategoryRequest
+            CreateUpdateCategoryRequestModel createCategory = new CreateUpdateCategoryRequestModel
             {
                 Title = "New Category"
             };
 
-            CreateUpdateCategoryRequest updateCategory = new CreateUpdateCategoryRequest
+            CreateUpdateCategoryRequestModel updateCategory = new CreateUpdateCategoryRequestModel
             {
                 Title = "New Title"
             };
@@ -343,7 +343,7 @@ namespace Miniflux.Tests
             // Arrange
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
-            CreateUpdateCategoryRequest createCategory = new CreateUpdateCategoryRequest
+            CreateUpdateCategoryRequestModel createCategory = new CreateUpdateCategoryRequestModel
             {
                 Title = "New Category"
             };
@@ -411,7 +411,7 @@ namespace Miniflux.Tests
         {
             // Arrange
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
-            CreateUserRequest createUser = new CreateUserRequest
+            CreateUserRequestModel createUser = new CreateUserRequestModel
             {
                 Username = "user1",
                 Password = "User123",
@@ -433,14 +433,14 @@ namespace Miniflux.Tests
             // Arrange
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
-            CreateUserRequest createUser = new CreateUserRequest
+            CreateUserRequestModel createUser = new CreateUserRequestModel
             {
                 Username = "user1",
                 Password = "User123",
                 IsAdmin = false
             };
 
-            UpdateUserRequest updateUser = new UpdateUserRequest
+            UpdateUserRequestModel updateUser = new UpdateUserRequestModel
             {
                 Username = "user2"
             };
@@ -462,7 +462,7 @@ namespace Miniflux.Tests
             // Arrange
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
-            CreateUserRequest createUser = new CreateUserRequest
+            CreateUserRequestModel createUser = new CreateUserRequestModel
             {
                 Username = "user1",
                 Password = "User123",
@@ -481,7 +481,7 @@ namespace Miniflux.Tests
             // Arrange
             MinifluxClient adminClient = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
-            CreateUserRequest createUser = new CreateUserRequest
+            CreateUserRequestModel createUser = new CreateUserRequestModel
             {
                 Username = "user1",
                 Password = "User123",
@@ -552,7 +552,7 @@ namespace Miniflux.Tests
             MinifluxClient client = new MinifluxClient(_minifluxUrl, _minifluxApiKey);
 
             // Act
-            ClientResponse result = await client.Import(xmlBytes);
+            ClientResponseModel result = await client.Import(xmlBytes);
 
             // Assert
             Assert.NotNull(result);

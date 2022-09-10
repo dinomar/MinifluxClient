@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Miniflux.Models
 {
-    public class CreateUpdateCategoryRequest
+    public class CreateUpdateCategoryRequestModel
     {
         [JsonProperty("title")]
         public string Title { get; set; }

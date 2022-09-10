@@ -17,7 +17,7 @@ namespace Miniflux.Extensions
                 if (!response.IsSuccessStatusCode)
                 {
                     string contentString = await response.Content.ReadAsStringAsync();
-                    ErrorResponse errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(contentString);
+                    ErrorResponseModel errorResponse = JsonConvert.DeserializeObject<ErrorResponseModel>(contentString);
                     throw new ClientException(errorResponse != null ? errorResponse.ErrorMessage : "Error", (int)response.StatusCode);
                 }
             }

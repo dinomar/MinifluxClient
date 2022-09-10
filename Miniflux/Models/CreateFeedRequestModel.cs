@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Miniflux.Models
 {
-    public class CreateFeedRequest
+    public class CreateFeedRequestModel
     {
         [JsonProperty("feed_url")]
         public string FeedUrl { get; set; }

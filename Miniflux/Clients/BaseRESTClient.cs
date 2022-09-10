@@ -27,6 +27,11 @@ namespace Miniflux.Clients
 
         public BaseRESTClient(Uri baseUri, int timeout = 30, Dictionary<string, string> headers = null)
         {
+            if (baseUri == null)
+            {
+                throw new ArgumentNullException(nameof(baseUri));
+            }
+
             _baseUri = baseUri;
             _timeout = timeout;
 
@@ -36,6 +41,10 @@ namespace Miniflux.Clients
         public BaseRESTClient(string baseUrl, int timeout = 30, Dictionary<string, string> headers = null)
             : this(new Uri(baseUrl), timeout: timeout, headers: headers)
         {
+            if (baseUrl == null)
+            {
+                throw new ArgumentNullException(nameof(baseUrl));
+            }
         }
 
 

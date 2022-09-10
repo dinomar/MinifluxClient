@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Miniflux.Models
 {
-    public class ErrorResponse
+    public class ErrorResponseModel
     {
         [JsonProperty("error_message")]
         public string ErrorMessage { get; set; }
