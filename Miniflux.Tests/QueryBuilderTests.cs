@@ -4,6 +4,7 @@ using System.Text;
 using Xunit;
 using Miniflux.Helpers;
 using Miniflux.Enums;
+using System.Web;
 
 namespace Miniflux.Tests
 {
@@ -13,7 +14,7 @@ namespace Miniflux.Tests
         public void CanAddItem()
         {
             // Arrange
-            string expected = "?offset=5";
+            string expected = HttpUtility.UrlEncode("?offset=5");
             QueryBuilder query = new QueryBuilder();
             int? offset = 5;
 
@@ -30,7 +31,7 @@ namespace Miniflux.Tests
         public void CanAddEnum()
         {
             // Arrange
-            string expected = "?direction=desc";
+            string expected = HttpUtility.UrlEncode("?direction=desc");
             QueryBuilder query = new QueryBuilder();
             DirectionFilter direction = DirectionFilter.Desc;
 
@@ -47,7 +48,7 @@ namespace Miniflux.Tests
         public void CanAddMultipleSelectionEnum()
         {
             // Arrange
-            string expected = "?status=['read','unread']";
+            string expected = HttpUtility.UrlEncode("?status=['read','unread']");
             QueryBuilder query = new QueryBuilder();
             StatusFilter status = StatusFilter.Read | StatusFilter.Unread;
 
